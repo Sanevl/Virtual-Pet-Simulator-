@@ -80,20 +80,6 @@ Storage: LocalStorage / In-memory database
 
 Graphics: Emojis + CSS Animations
 
-📁 Project Structure
-text
-virtual-pet-simulator/
-├── frontend/          # Main game (Netlify deploys this)
-│   ├── index.html
-│   ├── styles/
-│   └── scripts/
-└── backend/           # Optional Node.js server
-    ├── server.js
-    ├── routes/
-    └── models/
-🐛 Troubleshooting
-Game not loading? Check browser console (F12)
-
 Progress lost? Data saves every 30 seconds to localStorage
 
 Animations broken? Ensure all files are in correct folders
