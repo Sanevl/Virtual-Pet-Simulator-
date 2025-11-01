@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Pet Simulator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --day-bg: linear-gradient(135deg, #6e8efb, #a777e3);
+            --night-bg: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+            --day-pet-bg: #f0f8ff;
+            --night-pet-bg: #1a202c;
+        }
+
+        body {
+            background: var(--day-bg);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            transition: background 1.5s ease;
+        }
+
+        body.night-mode {
+            background: var(--night-bg);
+        }
+
+        .container {
+            max-width: 1000px;
+            width: 100%;
+            background-color: rgba(255, 255, 255, 0.9);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        body.night-mode .container {
+            background-color: rgba(30, 30, 40, 0.9);
+            color: #e2e8f0;
+        }
+
+        header {
+            background: linear-gradient(to right, #4a90e2, #7b68ee);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            position: relative;
+        }
+
+        body.night-mode header {
+            background: linear-gradient(to right, #2d3748, #4a5568);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .time-cycle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 5px 10px;
+            border-radius: 20px;
+        }
+
+        .time-icon {
+            font-size: 1.5rem;
+            margin-right: 5px;
+        }
+
+        .main-content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+
+        .pet-section {
+            flex: 1;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .pet-container {
+            width: 250px;
+            height: 250px;
+            background-color: var(--day-pet-bg);
+            border-radius: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.5s ease;
+        }
+
+        body.night-mode .pet-container {
+            background-color: var(--night-pet-bg);
+        }
+
+        .pet {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.5s ease;
+        }
+
+        .pet-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+
+        .pet-eye {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: #333;
+            border-radius: 50%;
+            top: 60px;
+            transition: all 0.3s ease;
+        }
+
+        .pet-eye.left {
+            left: 50px;
+        }
+
+        .pet-eye.right {
+            right: 50px;
+        }
+
+        .pet-eye.happy {
+            height: 10px;
+            border-radius: 5px;
+        }
+
+        .pet-eye.sleepy {
+            height: 5px;
+            border-radius: 2px;
+        }
+
+        .pet-mouth {
+            position: absolute;
+            width: 60px;
+            height: 20px;
+            border-bottom: 5px solid #333;
+            border-radius: 0 0 30px 30px;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            transition: all 0.5s ease;
+        }
+
+        .pet-mouth.happy {
+            border-radius: 0 0 30px 30px;
+            height: 25px;
+        }
+
+        .pet-mouth.sad {
+            border-radius: 30px 30px 0 0;
+            border-bottom: none;
+            border-top: 5px solid #333;
+            height: 15px;
+        }
+
+        .pet-mouth.eating {
+            animation: chew 0.5s infinite alternate;
+        }
+
+        .pet-accessory {
+            position: absolute;
+            font-size: 2rem;
+            z-index: 10;
+        }
+
+        .pet-status {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            width: 100%;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.night-mode .pet-status {
+            background-color: rgba(45, 55, 72, 0.8);
+        }
+
+        .status-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        body.night-mode .status-title {
+            color: #e2e8f0;
+        }
+
+        .status-bar {
+            margin-bottom: 15px;
+        }
+
+        .status-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: #4a5568;
+        }
+
+        body.night-mode .status-label {
+            color: #e2e8f0;
+        }
+
+        .progress-container {
+            height: 20px;
+            background-color: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        body.night-mode .progress-container {
+            background-color: #4a5568;
+        }
+
+        .progress-bar {
+            height: 100%;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+
+        .hunger-bar {
+            background: linear-gradient(to right, #f56565, #e53e3e);
+        }
+
+        .happiness-bar {
+            background: linear-gradient(to right, #68d391, #38a169);
+        }
+
+        .energy-bar {
+            background: linear-gradient(to right, #4299e1, #3182ce);
+        }
+
+        .actions-section {
+            flex: 1;
+            min-width: 300px;
+            padding: 20px;
+        }
+
+        .pet-selector {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 20px;
+            gap: 10px;
+        }
+
+        .pet-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .pet-option.active {
+            border-color: #4a90e2;
+            transform: scale(1.1);
+        }
+
+        .actions-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        body.night-mode .actions-title {
+            color: #e2e8f0;
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .action-btn {
+            padding: 15px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .action-btn i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .feed-btn {
+            background: linear-gradient(to right, #f6ad55, #ed8936);
+            color: white;
+        }
+
+        .play-btn {
+            background: linear-gradient(to right, #68d391, #48bb78);
+            color: white;
+        }
+
+        .sleep-btn {
+            background: linear-gradient(to right, #4fd1c7, #38b2ac);
+            color: white;
+        }
+
+        .clean-btn {
+            background: linear-gradient(to right, #f687b3, #ed64a6);
+            color: white;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .action-btn:active {
+            transform: translateY(0);
+        }
+
+        .pet-message {
+            background-color: #edf2f7;
+            padding: 15px;
+            border-radius: 15px;
+            text-align: center;
+            font-style: italic;
+            color: #4a5568;
+            margin-top: 20px;
+            min-height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        body.night-mode .pet-message {
+            background-color: #2d3748;
+            color: #e2e8f0;
+        }
+
+        .achievements {
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        body.night-mode .achievements {
+            background-color: rgba(45, 55, 72, 0.8);
+        }
+
+        .achievements-title {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #4a5568;
+            font-weight: 600;
+        }
+
+        body.night-mode .achievements-title {
+            color: #e2e8f0;
+        }
+
+        .achievement-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .achievement {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #e2e8f0;
+            font-size: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        body.night-mode .achievement {
+            background-color: #4a5568;
+        }
+
+        .achievement.unlocked {
+            background-color: #f6e05e;
+            transform: scale(1.1);
+        }
+
+        .achievement .tooltip {
+            position: absolute;
+            bottom: -40px;
+            background: #2d3748;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            font-size: 0.8rem;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s;
+        }
+
+        .achievement:hover .tooltip {
+            opacity: 1;
+        }
+
+        footer {
+            background-color: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 15px;
+            font-size: 0.9rem;
+        }
+
+        @keyframes chew {
+            from { transform: translateX(-50%) rotate(0deg); }
+            to { transform: translateX(-50%) rotate(10deg); }
+        }
+
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-10px); }
+        }
+
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .pet-section, .actions-section {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Virtual Pet Simulator</h1>
+            <div class="subtitle">Take care of your virtual pet and keep it happy and healthy!</div>
+            <div class="time-cycle">
+                <span class="time-icon">☀️</span>
+                <span id="time-display">Day</span>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="pet-section">
+                <div class="pet-selector">
+                    <div class="pet-option active" data-pet="cat">🐱</div>
+                    <div class="pet-option" data-pet="dog">🐶</div>
+                    <div class="pet-option" data-pet="rabbit">🐰</div>
+                    <div class="pet-option" data-pet="fox">🦊</div>
+                </div>
+                
+                <div class="pet-container">
+                    <div class="pet" id="pet">
+                        <div class="pet-face">
+                            <div class="pet-eye left"></div>
+                            <div class="pet-eye right"></div>
+                            <div class="pet-mouth"></div>
+                        </div>
+                        <div class="pet-accessory" id="pet-accessory"></div>
+                    </div>
+                </div>
+                
+                <div class="pet-status">
+                    <h3 class="status-title">Pet Status</h3>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Hunger</span>
+                            <span id="hunger-value">50%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar hunger-bar" id="hunger-bar" style="width: 50%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Happiness</span>
+                            <span id="happiness-value">70%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar happiness-bar" id="happiness-bar" style="width: 70%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Energy</span>
+                            <span id="energy-value">60%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar energy-bar" id="energy-bar" style="width: 60%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="achievements">
+                    <h3 class="achievements-title">Achievements</h3>
+                    <div class="achievement-list">
+                        <div class="achievement" id="achievement-1">
+                            🥇
+                            <div class="tooltip">First Meal - Feed your pet for the first time</div>
+                        </div>
+                        <div class="achievement" id="achievement-2">
+                            🎮
+                            <div class="tooltip">Playful - Play with your pet 5 times</div>
+                        </div>
+                        <div class="achievement" id="achievement-3">
+                            🌙
+                            <div class="tooltip">Good Night - Put your pet to sleep 3 times</div>
+                        </div>
+                        <div class="achievement" id="achievement-4">
+                            💫
+                            <div class="tooltip">Night Owl - Interact with your pet at night</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions-section">
+                <h3 class="actions-title">Interact with Your Pet</h3>
+                
+                <div class="action-buttons">
+                    <button class="action-btn feed-btn" id="feed-btn">
+                        <i>🍕</i>
+                        <span>Feed</span>
+                    </button>
+                    
+                    <button class="action-btn play-btn" id="play-btn">
+                        <i>🎾</i>
+                        <span>Play</span>
+                    </button>
+                    
+                    <button class="action-btn sleep-btn" id="sleep-btn">
+                        <i>😴</i>
+                        <span>Sleep</span>
+                    </button>
+                    
+                    <button class="action-btn clean-btn" id="clean-btn">
+                        <i>🛁</i>
+                        <span>Clean</span>
+                    </button>
+                </div>
+                
+                <div class="pet-message" id="pet-message">
+                    Hello! I'm your virtual pet. Take good care of me!
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Virtual Pet Simulator &copy; 2023 | Created with HTML, CSS & JavaScript</p>
+        </footer>
+    </div>
+
+    <script>
+        // Pet status variables
+        let hunger = 50;
+        let happiness = 70;
+        let energy = 60;
+        let isDay = true;
+        let currentPet = 'cat';
+        let playCount = 0;
+        let sleepCount = 0;
+        let feedCount = 0;
+        let nightInteraction = false;
+        
+        // DOM elements
+        const hungerBar = document.getElementById('hunger-bar');
+        const happinessBar = document.getElementById('happiness-bar');
+        const energyBar = document.getElementById('energy-bar');
+        const hungerValue = document.getElementById('hunger-value');
+        const happinessValue = document.getElementById('happiness-value');
+        const energyValue = document.getElementById('energy-value');
+        const petMessage = document.getElementById('pet-message');
+        const petMouth = document.querySelector('.pet-mouth');
+        const petEyes = document.querySelectorAll('.pet-eye');
+        const pet = document.getElementById('pet');
+        const petAccessory = document.getElementById('pet-accessory');
+        const timeDisplay = document.getElementById('time-display');
+        const body = document.body;
+        
+        // Pet type colors and accessories
+        const petTypes = {
+            cat: { color: '#ffcc80', accessory: '🐟', happyColor: '#ffb74d', sadColor: '#ff9800' },
+            dog: { color: '#a1887f', accessory: '🦴', happyColor: '#8d6e63', sadColor: '#6d4c41' },
+            rabbit: { color: '#e0e0e0', accessory: '🥕', happyColor: '#bdbdbd', sadColor: '#9e9e9e' },
+            fox: { color: '#ff8a65', accessory: '🍇', happyColor: '#ff7043', sadColor: '#f4511e' }
+        };
+        
+        // Update status bars
+        function updateStatus() {
+            hungerBar.style.width = `${hunger}%`;
+            happinessBar.style.width = `${happiness}%`;
+            energyBar.style.width = `${energy}%`;
+            
+            hungerValue.textContent = `${hunger}%`;
+            happinessValue.textContent = `${happiness}%`;
+            energyValue.textContent = `${energy}%`;
+            
+            // Update pet appearance based on status
+            updatePetAppearance();
+            
+            // Check for achievements
+            checkAchievements();
+        }
+        
+        // Update pet appearance based on status
+        function updatePetAppearance() {
+            const petType = petTypes[currentPet];
+            
+            // Update color based on happiness
+            if (happiness >= 70) {
+                pet.style.backgroundColor = petType.happyColor;
+                pet.style.animation = 'pulse 2s infinite';
+            } else if (happiness >= 40) {
+                pet.style.backgroundColor = petType.color;
+                pet.style.animation = 'none';
+            } else {
+                pet.style.backgroundColor = petType.sadColor;
+                pet.style.animation = 'none';
+            }
+            
+            // Update eyes based on energy
+            if (energy >= 70) {
+                petEyes.forEach(eye => {
+                    eye.classList.remove('sleepy');
+                    eye.classList.add('happy');
+                });
+            } else if (energy >= 30) {
+                petEyes.forEach(eye => {
+                    eye.classList.remove('happy');
+                    eye.classList.remove('sleepy');
+                });
+            } else {
+                petEyes.forEach(eye => {
+                    eye.classList.remove('happy');
+                    eye.classList.add('sleepy');
+                });
+            }
+            
+            // Update mouth based on hunger and happiness
+            if (hunger <= 30) {
+                petMouth.classList.remove('happy');
+                petMouth.classList.add('sad');
+            } else if (happiness >= 70) {
+                petMouth.classList.remove('sad');
+                petMouth.classList.add('happy');
+            } else {
+                petMouth.classList.remove('happy');
+                petMouth.classList.remove('sad');
+            }
+            
+            // Update accessory visibility based on happiness
+            if (happiness >= 80) {
+                petAccessory.textContent = petType.accessory;
+                petAccessory.style.animation = 'bounce 1s infinite alternate';
+            } else {
+                petAccessory.textContent = '';
+                petAccessory.style.animation = 'none';
+            }
+        }
+        
+        // Check and unlock achievements
+        function checkAchievements() {
+            // First meal achievement
+            if (feedCount >= 1) {
+                document.getElementById('achievement-1').classList.add('unlocked');
+            }
+            
+            // Playful achievement
+            if (playCount >= 5) {
+                document.getElementById('achievement-2').classList.add('unlocked');
+            }
+            
+            // Good night achievement
+            if (sleepCount >= 3) {
+                document.getElementById('achievement-3').classList.add('unlocked');
+            }
+            
+            // Night owl achievement
+            if (nightInteraction) {
+                document.getElementById('achievement-4').classList.add('unlocked');
+            }
+        }
+        
+        // Toggle day/night cycle
+        function toggleDayNight() {
+            isDay = !isDay;
+            
+            if (isDay) {
+                body.classList.remove('night-mode');
+                timeDisplay.textContent = 'Day';
+                document.querySelector('.time-icon').textContent = '☀️';
+            } else {
+                body.classList.add('night-mode');
+                timeDisplay.textContent = 'Night';
+                document.querySelector('.time-icon').textContent = '🌙';
+            }
+        }
+        
+        // Change pet type
+        function changePetType(type) {
+            currentPet = type;
+            document.querySelectorAll('.pet-option').forEach(option => {
+                option.classList.remove('active');
+            });
+            document.querySelector(`.pet-option[data-pet="${type}"]`).classList.add('active');
+            
+            // Update pet appearance
+            updatePetAppearance();
+        }
+        
+        // Button event listeners
+        document.getElementById('feed-btn').addEventListener('click', function() {
+            if (hunger < 100) {
+                hunger = Math.min(hunger + 15, 100);
+                energy = Math.min(energy + 5, 100);
+                happiness = Math.min(happiness + 5, 100);
+                feedCount++;
+                
+                // Eating animation
+                petMouth.classList.add('eating');
+                setTimeout(() => {
+                    petMouth.classList.remove('eating');
+                }, 1000);
+                
+                updateStatus();
+                petMessage.textContent = "Yum! That was delicious!";
+                
+                // Check for night interaction
+                if (!isDay) nightInteraction = true;
+            } else {
+                petMessage.textContent = "I'm too full to eat right now!";
+            }
+        });
+        
+        document.getElementById('play-btn').addEventListener('click', function() {
+            if (energy > 10) {
+                happiness = Math.min(happiness + 15, 100);
+                energy = Math.max(energy - 10, 0);
+                hunger = Math.max(hunger - 5, 0);
+                playCount++;
+                
+                // Play animation
+                pet.style.animation = 'spin 1s ease';
+                setTimeout(() => {
+                    updatePetAppearance();
+                }, 1000);
+                
+                updateStatus();
+                petMessage.textContent = "Wheee! That was so much fun!";
+                
+                // Check for night interaction
+                if (!isDay) nightInteraction = true;
+            } else {
+                petMessage.textContent = "I'm too tired to play right now...";
+            }
+        });
+        
+        document.getElementById('sleep-btn').addEventListener('click', function() {
+            if (energy < 100) {
+                energy = Math.min(energy + 20, 100);
+                hunger = Math.max(hunger - 10, 0);
+                sleepCount++;
+                
+                updateStatus();
+                petMessage.textContent = "Zzzzz... Good night!";
+                
+                // Check for night interaction
+                if (!isDay) nightInteraction = true;
+            } else {
+                petMessage.textContent = "I'm not sleepy right now!";
+            }
+        });
+        
+        document.getElementById('clean-btn').addEventListener('click', function() {
+            happiness = Math.min(happiness + 10, 100);
+            updateStatus();
+            petMessage.textContent = "Ahhh, I feel so fresh and clean now!";
+            
+            // Check for night interaction
+            if (!isDay) nightInteraction = true;
+        });
+        
+        // Pet selection event listeners
+        document.querySelectorAll('.pet-option').forEach(option => {
+            option.addEventListener('click', function() {
+                changePetType(this.getAttribute('data-pet'));
+            });
+        });
+        
+        // Initialize the pet
+        updateStatus();
+        
+        // Set up day/night cycle (every 30 seconds)
+        setInterval(toggleDayNight, 30000);
+        
+        // Gradually decrease stats over time
+        setInterval(() => {
+            hunger = Math.max(hunger - 2, 0);
+            happiness = Math.max(happiness - 1, 0);
+            energy = Math.max(energy - 1, 0);
+            updateStatus();
+        }, 10000);
+    </script>
+</body>
+</html>

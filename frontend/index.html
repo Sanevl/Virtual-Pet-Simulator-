@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Pet Simulator</title>
+    <link rel="stylesheet" href="styles/main.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Virtual Pet Simulator</h1>
+            <div class="subtitle">Take care of your virtual pet and keep it happy and healthy!</div>
+            <div class="user-section">
+                <div id="login-section">
+                    <input type="text" id="username" placeholder="Enter username">
+                    <button id="login-btn">Start Playing</button>
+                </div>
+                <div id="user-info" class="hidden">
+                    <span>Welcome, <span id="current-user"></span>!</span>
+                    <button id="logout-btn">Logout</button>
+                </div>
+            </div>
+        </header>
+        
+        <div class="main-content">
+            <div class="pet-section">
+                <div class="pet-selector">
+                    <div class="pet-option active" data-pet="cat">🐱</div>
+                    <div class="pet-option" data-pet="dog">🐶</div>
+                    <div class="pet-option" data-pet="rabbit">🐰</div>
+                    <div class="pet-option" data-pet="fox">🦊</div>
+                </div>
+                
+                <div class="pet-container">
+                    <div class="pet" id="pet">
+                        <div class="pet-face">
+                            <div class="pet-eye left"></div>
+                            <div class="pet-eye right"></div>
+                            <div class="pet-mouth"></div>
+                        </div>
+                        <div class="pet-accessory" id="pet-accessory"></div>
+                    </div>
+                </div>
+                
+                <div class="pet-status">
+                    <h3 class="status-title">Pet Status</h3>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Hunger</span>
+                            <span id="hunger-value">50%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar hunger-bar" id="hunger-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Happiness</span>
+                            <span id="happiness-value">70%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar happiness-bar" id="happiness-bar"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="status-bar">
+                        <div class="status-label">
+                            <span>Energy</span>
+                            <span id="energy-value">60%</span>
+                        </div>
+                        <div class="progress-container">
+                            <div class="progress-bar energy-bar" id="energy-bar"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="achievements">
+                    <h3 class="achievements-title">Achievements</h3>
+                    <div class="achievement-list">
+                        <div class="achievement" id="achievement-1">
+                            🥇
+                            <div class="tooltip">First Meal</div>
+                        </div>
+                        <div class="achievement" id="achievement-2">
+                            🎮
+                            <div class="tooltip">Playful</div>
+                        </div>
+                        <div class="achievement" id="achievement-3">
+                            🌙
+                            <div class="tooltip">Good Night</div>
+                        </div>
+                        <div class="achievement" id="achievement-4">
+                            💫
+                            <div class="tooltip">Night Owl</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="actions-section">
+                <h3 class="actions-title">Interact with Your Pet</h3>
+                
+                <div class="action-buttons">
+                    <button class="action-btn feed-btn" id="feed-btn">
+                        <i>🍕</i>
+                        <span>Feed</span>
+                    </button>
+                    
+                    <button class="action-btn play-btn" id="play-btn">
+                        <i>🎾</i>
+                        <span>Play</span>
+                    </button>
+                    
+                    <button class="action-btn sleep-btn" id="sleep-btn">
+                        <i>😴</i>
+                        <span>Sleep</span>
+                    </button>
+                    
+                    <button class="action-btn clean-btn" id="clean-btn">
+                        <i>🛁</i>
+                        <span>Clean</span>
+                    </button>
+                </div>
+                
+                <div class="pet-message" id="pet-message">
+                    Please login to start playing!
+                </div>
+
+                <div class="game-stats">
+                    <h3>Game Statistics</h3>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Play Time:</span>
+                            <span class="stat-value" id="play-time">0m</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Interactions:</span>
+                            <span class="stat-value" id="interaction-count">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Level:</span>
+                            <span class="stat-value" id="pet-level">1</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>Virtual Pet Simulator &copy; 2023 | Created with HTML, CSS & JavaScript</p>
+        </footer>
+    </div>
+
+    <script src="scripts/pet.js"></script>
+    <script src="scripts/game.js"></script>
+    <script src="scripts/app.js"></script>
+</body>
+</html>

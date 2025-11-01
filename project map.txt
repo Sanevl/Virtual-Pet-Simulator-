@@ -1,0 +1,20 @@
+virtual-pet-simulator/
+├── frontend/                    # Frontend files (for Live Server)
+│   ├── index.html              # Main game file
+│   ├── styles/
+│   │   └── main.css            # All styling and animations
+│   └── scripts/
+│       ├── pet.js              # Pet behavior and logic
+│       ├── game.js             # Game management
+│       └── app.js              # App initialization
+└── backend/                    # Backend files (for Node.js)
+    ├── server.js               # Express server
+    ├── models/
+    │   └── Pet.js              # Pet data model
+    ├── routes/
+    │   ├── auth.js             # Authentication routes
+    │   ├── pets.js             # Pet interaction routes
+    │   └── leaderboard.js      # Leaderboard routes
+    ├── config/
+    │   └── database.js         # In-memory database
+    └── package.json            # Dependencies
